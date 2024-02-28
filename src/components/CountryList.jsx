@@ -4,7 +4,7 @@ import Country from "./Country";
 function CountryList({ countries }) {
 
     return ( 
-        <div>
+        <div className="flex flex-wrap justify-evenly">
             {
                 countries && (
                     countries.map((item) => (
