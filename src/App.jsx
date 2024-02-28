@@ -5,7 +5,8 @@ import './App.css';
 
 function App() {
   const [countriesList, setCountriesList] = useState([]);
-  // const [filteredCountries, setFilteredCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
+
   const inputSearch = useRef();
 
   useEffect(() => {
@@ -20,24 +21,30 @@ function App() {
     e.preventDefault();
     const searchWordCleaned = inputSearch.current.value.toLowerCase().trim();
     const countrySearched = countriesList.filter(country => country.translations.fra.common.toLowerCase() === searchWordCleaned);
-    console.log(countrySearched);
-    setCountriesList(countrySearched);
-    console.log("ok");
+    setFilteredCountries(countrySearched);
   };
+
+  const resetTheSearch = () => {
+    setFilteredCountries([]);
+  }
 
   return (
     <>
       <header>
+
         <form onSubmit={handleSubmitSearch}>
           <label htmlFor="search">Rechercher un pays</label>
           <input type="search" ref={inputSearch} id="search"  />
         </form>
       </header>
       <main>
-        {countriesList.length === 0 ? (
-          <p>Auncun pays</p>
+        {filteredCountries.length === 0 ? (
+          <CountryList countries={countriesList} />
         ) : (
-            <CountryList countries={countriesList} />
+          <>
+            <CountryList countries={filteredCountries} />
+            <button onClick={resetTheSearch}>Revenir à la liste compléte</button>
+          </>
         )}
       </main>
       <footer></footer>
