@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import axios from 'axios';
+import { useEffect, useState, useRef } from 'react';
+import CountryList from './components/CountryList';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [countriesList, setCountriesList] = useState([]);
+  // const [filteredCountries, setFilteredCountries] = useState([]);
+  const inputSearch = useRef();
+
+  useEffect(() => {
+    axios.get('https://restcountries.com/v3.1/all?fields=id,translations,flags,region,population,capital')
+      .then(response => {
+        setCountriesList(response.data);
+      })
+      .catch(error => console.error(error));
+  }, []);
+
+  const handleSubmitSearch = (e) => {
+    e.preventDefault();
+    const searchWordCleaned = inputSearch.current.value.toLowerCase().trim();
+    const countrySearched = countriesList.filter(country => country.translations.fra.common.toLowerCase() === searchWordCleaned);
+    console.log(countrySearched);
+    setCountriesList(countrySearched);
+    console.log("ok");
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <header>
+        <form onSubmit={handleSubmitSearch}>
+          <label htmlFor="search">Rechercher un pays</label>
+          <input type="search" ref={inputSearch} id="search"  />
+        </form>
+      </header>
+      <main>
+        {countriesList.length === 0 ? (
+          <p>Auncun pays</p>
+        ) : (
+            <CountryList countries={countriesList} />
+        )}
+      </main>
+      <footer></footer>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
